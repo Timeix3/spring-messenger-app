@@ -1,24 +1,237 @@
-# Compiled class file
-*.class
 
+### Visual Studio Code ###
+# VS Code workspace settings
+.vscode/*
+# Shared VS Code settings
+!.vscode/settings.json
+# VS Code build tasks
+!.vscode/tasks.json
+# VS Code debug configurations
+!.vscode/launch.json
+# VS Code recommended extensions
+!.vscode/extensions.json
+# VS Code snippets
+!.vscode/*.code-snippets
+!*.code-workspace
+*.vsix
+
+### Node.js ###
+logs
+# Node.js diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+# Process ID files
+pids
+# Process ID file
+*.pid
+# Random seed file
+*.seed
+# Process lock file
+*.pid.lock
+# Lerna debug logs
+lerna-debug.log*
+# Library coverage
+lib-cov
 # Log file
 *.log
+# Coverage directory
+coverage
+# LCOV coverage data
+*.lcov
+# TypeScript build info
+*.tsbuildinfo
+# NYC coverage output
+.nyc_output
+# npm debug logs
+npm-debug.log*
+# Grunt intermediate storage
+.grunt
+# Yarn debug logs
+yarn-debug.log*
+# Bower dependencies
+bower_components
+# Yarn error logs
+yarn-error.log*
+# node-waf configuration
+.lock-wscript
+# Compiled binary addons
+build/Release
+# Node.js dependencies
+node_modules/
+# JSPM packages
+jspm_packages/
+# Snowpack modules
+web_modules/
+# npm cache directory
+.npm
+# ESLint cache
+.eslintcache
+# Stylelint cache
+.stylelintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+# Environment variables
+.env
+.env.*
+!.env.example
+# Cache directory
+.cache
+# Parcel bundler cache
+.parcel-cache
+# Next.js build output
+.next
+# Next.js static export
+out
+# Nuxt.js build output
+.nuxt
+dist
+.cache/
+# Nitro/Nuxt production build output
+.output
+# VuePress build output
+.vuepress/dist
+# Temporary files
+.temp
+.svelte-kit/
+**/.vitepress/dist
+**/.vitepress/cache
+# Docusaurus cache
+.docusaurus
+# Serverless framework
+.serverless/
+# FuseBox cache
+.fusebox/
+# Local DynamoDB
+.dynamodb/
+.firebase/
+# Tern.js port file
+.tern-port
+# VS Code test directory
+.vscode-test
+.pnpm-store
+# Yarn Plug'n'Play
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+.vite/
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+### Java ###
+# Java compiled class file
+*.class
+# Java archive
 *.jar
+*.ctxt
+# Web application archive
 *.war
+.mtj.tmp/
+# Native archive
 *.nar
+# Enterprise archive
 *.ear
+# ZIP archive
 *.zip
+# Gzipped tar archive
 *.tar.gz
+# RAR archive
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Java crash log
 hs_err_pid*
+# Java replay file
 replay_pid*
+
+### IntelliJ IDEA ###
+# IntelliJ workspace settings
+.idea/**/workspace.xml
+# IntelliJ tasks
+.idea/**/tasks.xml
+# IntelliJ usage statistics
+.idea/**/usage.statistics.xml
+# IntelliJ user dictionaries
+.idea/**/dictionaries
+# IntelliJ shelved changes
+.idea/**/shelf
+.idea/**/aws.xml
+# IntelliJ content model
+.idea/**/contentModel.xml
+# IntelliJ database configurations
+.idea/**/dataSources/
+# IntelliJ datasource IDs
+.idea/**/dataSources.ids
+# IntelliJ local datasources
+.idea/**/dataSources.local.xml
+# IntelliJ SQL datasources
+.idea/**/sqlDataSources.xml
+# IntelliJ dynamic elements
+.idea/**/dynamic.xml
+# IntelliJ UI designer
+.idea/**/uiDesigner.xml
+# IntelliJ database navigator
+.idea/**/dbnavigator.xml
+# IntelliJ Gradle settings
+.idea/**/gradle.xml
+# IntelliJ project libraries
+.idea/**/libraries
+cmake-build-*/
+.idea/**/mongoSettings.xml
+# IntelliJ workspace file
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+.idea/replstate.xml
+.idea/sonarlint/
+# see https://community.sonarsource.com/t/is-the-file-idea-idea-idea-sonarlint-xml-intended-to-be-under-source-control/121119
+.idea/sonarlint.xml
+com_crashlytics_export_strings.xml
+# Crashlytics config
+crashlytics.properties
+# Crashlytics build
+crashlytics-build.properties
+# Fabric properties
+fabric.properties
+.idea/httpRequests
+http-client.private.env.json
+.idea/caches/build_file_checksums.ser
+.idea/.cache/.Apifox_Helper
+.idea/ApifoxUploaderProjectSetting.xml
+
+### Maven ###
+# Maven build directory
+target/
+# Maven version backup
+pom.xml.tag
+# Maven release backup
+pom.xml.releaseBackup
+# Maven versions backup
+pom.xml.versionsBackup
+# Maven next version
+pom.xml.next
+# Maven release properties
+release.properties
+# Maven shaded POM
+dependency-reduced-pom.xml
+# Eclipse project file
+.project
+# Maven build number
+buildNumber.properties
+# Eclipse classpath
+.classpath
+# Maven timing data
+.mvn/timing.properties
+# Maven wrapper JAR
+.mvn/wrapper/maven-wrapper.jar
+
+### Vite ###
+# Server-side rendering build output
+dist-ssr
+# Local-only files (e.g. .env.local)
+*.local
+
+### Redis ###
+*.rdb
