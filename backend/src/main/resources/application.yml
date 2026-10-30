@@ -28,9 +28,8 @@ spring:
 
 app:
   jwt:
-    secret: "my-super-secret-key-for-jwt-must-be-at-least-32-characters-long-1234567890"
-    access-token-expiration: 900000     # 15 минут
-    refresh-token-expiration: 604800000 # 7 дней
+    secret: "X7LlyhADFJv4C+QbeY7EZz7IqnAFnR1l/bAiDzmOpnf0UkNjtdL9XplO8uZPkaLvUhK5LqgY89cNXFNzsv1f5Q=="
+    access-token-expiration: 15m
 
 springdoc:
   api-docs:
