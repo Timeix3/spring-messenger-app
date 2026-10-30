@@ -1,6 +1,7 @@
 
 ### Visual Studio Code ###
 # VS Code workspace settings
+.vscode/
 .vscode/*
 # Shared VS Code settings
 !.vscode/settings.json

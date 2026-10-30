@@ -126,11 +126,7 @@ public class SecurityConfig {
         return registration;
     }
 
-    private void writeError(
-            HttpServletResponse response,
-            HttpStatus status,
-            String message
-    ) throws IOException {
+    private void writeError(HttpServletResponse response, HttpStatus status, String message) throws IOException {
 
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

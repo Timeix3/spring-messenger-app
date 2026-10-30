@@ -6,6 +6,7 @@ import com.timeix3.messenger.dto.auth.LoginRequest;
 import com.timeix3.messenger.dto.auth.RegisterRequest;
 import com.timeix3.messenger.entity.User;
 import com.timeix3.messenger.exception.UsernameAlreadyExistsException;
+import com.timeix3.messenger.mapper.UserMapper;
 import com.timeix3.messenger.repository.UserRepository;
 import com.timeix3.messenger.security.JwtService;
 import com.timeix3.messenger.security.TokenBlacklistService;
@@ -28,6 +29,7 @@ public class AuthService {
     private final JwtProperties jwtProperties;
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService tokenBlacklistService;
+    private final UserMapper userMapper;
 
     public AuthService(
             UserRepository userRepository,
@@ -35,7 +37,8 @@ public class AuthService {
             JwtService jwtService,
             JwtProperties jwtProperties,
             AuthenticationManager authenticationManager,
-            TokenBlacklistService tokenBlacklistService
+            TokenBlacklistService tokenBlacklistService,
+            UserMapper userMapper
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -43,6 +46,7 @@ public class AuthService {
         this.jwtProperties = jwtProperties;
         this.authenticationManager = authenticationManager;
         this.tokenBlacklistService = tokenBlacklistService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -54,7 +58,7 @@ public class AuthService {
             throw new UsernameAlreadyExistsException("Username is already taken");
         }
 
-        User user = new User();
+        User user = userMapper.toEntity(request);
         user.setUsername(username);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
 
@@ -69,7 +73,12 @@ public class AuthService {
                 savedUser.getUsername()
         );
 
-        return toAuthResponse(savedUser, accessToken);
+        return userMapper.toAuthResponse(
+                savedUser,
+                "Bearer",
+                accessToken,
+                jwtProperties.accessExpiration().toSeconds()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -92,23 +101,17 @@ public class AuthService {
                 user.getUsername()
         );
 
-        return toAuthResponse(user, accessToken);
+        return userMapper.toAuthResponse(
+                user,
+                "Bearer",
+                accessToken,
+                jwtProperties.accessExpiration().toSeconds()
+        );
     }
 
     public void logout(String accessToken) {
         Claims claims = jwtService.parseClaims(accessToken);
         tokenBlacklistService.blacklist(claims);
-    }
-
-    private AuthResponse toAuthResponse(User user, String accessToken) {
-        return new AuthResponse(
-                "Bearer",
-                accessToken,
-                jwtProperties.accessExpiration().toSeconds(),
-                user.getId(),
-                user.getUsername(),
-                user.getDisplayName()
-        );
     }
 
     private String normalizeUsername(String username) {
