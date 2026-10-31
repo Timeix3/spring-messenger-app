@@ -11,7 +11,7 @@ public final class SecurityUtils {
         return getUserId(authentication);
     }
 
-    private static Long getUserId(Authentication authentication) {
+    public static Long getUserId(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UnauthorizedException("User is not authenticated");
         }

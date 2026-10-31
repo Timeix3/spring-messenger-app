@@ -11,6 +11,8 @@ import com.timeix3.messenger.repository.UserRepository;
 import com.timeix3.messenger.security.JwtService;
 import com.timeix3.messenger.security.TokenBlacklistService;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
 import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -30,24 +33,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService tokenBlacklistService;
     private final UserMapper userMapper;
-
-    public AuthService(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService,
-            JwtProperties jwtProperties,
-            AuthenticationManager authenticationManager,
-            TokenBlacklistService tokenBlacklistService,
-            UserMapper userMapper
-    ) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.jwtProperties = jwtProperties;
-        this.authenticationManager = authenticationManager;
-        this.tokenBlacklistService = tokenBlacklistService;
-        this.userMapper = userMapper;
-    }
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {

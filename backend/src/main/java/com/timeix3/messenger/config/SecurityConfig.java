@@ -40,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -54,7 +54,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/ws/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
@@ -84,18 +85,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) 
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) 
     throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    @Bean 
+    CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
@@ -118,7 +119,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
+    FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
         FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
 
         registration.setEnabled(false);
