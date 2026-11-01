@@ -22,43 +22,47 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @Transactional(readOnly = true)
 public class MessageService {
 
-    private final MessageRepository messageRepository;
-    private final MessageMapper messageMapper;
-    private final ConversationAccessChecker accessChecker;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final MessageRateLimiter messageRateLimiter;
+  private final MessageRepository messageRepository;
+  private final MessageMapper messageMapper;
+  private final ConversationAccessChecker accessChecker;
+  private final SimpMessagingTemplate messagingTemplate;
+  private final MessageRateLimiter messageRateLimiter;
 
-    @Transactional
-    public MessageResponse sendMessage(Long conversationId, Long senderId, SendMessageRequest request) {
-        messageRateLimiter.checkAllowed(senderId);
-        Conversation conversation = accessChecker.getConversationWithDetails(conversationId, senderId);
-        User sender = accessChecker.getParticipant(conversation, senderId);
-        Message message = messageMapper.toEntity(request);
-        message.setConversation(conversation);
-        message.setSender(sender);
+  @Transactional
+  public MessageResponse sendMessage(
+      Long conversationId, Long senderId, SendMessageRequest request) {
+    messageRateLimiter.checkAllowed(senderId);
+    Conversation conversation = accessChecker.getConversationWithDetails(conversationId, senderId);
+    User sender = accessChecker.getParticipant(conversation, senderId);
+    Message message = messageMapper.toEntity(request);
+    message.setConversation(conversation);
+    message.setSender(sender);
 
-        Message savedMessage = messageRepository.save(message);
-        conversation.setLastMessage(savedMessage);
-        conversation.setLastMessageAt(savedMessage.getCreatedAt());
-        MessageResponse response = messageMapper.toResponse(savedMessage);
+    Message savedMessage = messageRepository.save(message);
+    conversation.setLastMessage(savedMessage);
+    conversation.setLastMessageAt(savedMessage.getCreatedAt());
+    MessageResponse response = messageMapper.toResponse(savedMessage);
 
-        sendToWebSocketAfterCommit(conversationId, response);
-        return response;
-    }
+    sendToWebSocketAfterCommit(conversationId, response);
+    return response;
+  }
 
-    public PageResponse<MessageResponse> getMessages(Long conversationId, Long currentUserId, Pageable pageable) {
-        accessChecker.getConversationReference(conversationId, currentUserId);
-        Page<Message> messages = messageRepository.findByConversationIdOrderByIdDesc(conversationId, pageable);
-        Page<MessageResponse> mapped = messages.map(messageMapper::toResponse);
-        return PageResponse.from(mapped);
-    }
+  public PageResponse<MessageResponse> getMessages(
+      Long conversationId, Long currentUserId, Pageable pageable) {
+    accessChecker.getConversationReference(conversationId, currentUserId);
+    Page<Message> messages =
+        messageRepository.findByConversationIdOrderByIdDesc(conversationId, pageable);
+    Page<MessageResponse> mapped = messages.map(messageMapper::toResponse);
+    return PageResponse.from(mapped);
+  }
 
-    private void sendToWebSocketAfterCommit(Long conversationId, MessageResponse response) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                messagingTemplate.convertAndSend("/topic/conversations/" + conversationId, response);
-            }
+  private void sendToWebSocketAfterCommit(Long conversationId, MessageResponse response) {
+    TransactionSynchronizationManager.registerSynchronization(
+        new TransactionSynchronization() {
+          @Override
+          public void afterCommit() {
+            messagingTemplate.convertAndSend("/topic/conversations/" + conversationId, response);
+          }
         });
-    }
+  }
 }

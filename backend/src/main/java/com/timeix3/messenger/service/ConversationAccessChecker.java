@@ -12,59 +12,59 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ConversationAccessChecker {
 
-    private final ConversationRepository conversationRepository;
+  private final ConversationRepository conversationRepository;
 
-    public Conversation getConversationWithDetails(Long conversationId, Long userId) {
-        Conversation conversation = conversationRepository
-                .findWithDetailsById(conversationId)
-                .orElseThrow(() -> new NotFoundException("Conversation not found"));
+  public Conversation getConversationWithDetails(Long conversationId, Long userId) {
+    Conversation conversation =
+        conversationRepository
+            .findWithDetailsById(conversationId)
+            .orElseThrow(() -> new NotFoundException("Conversation not found"));
 
-        assertParticipant(conversation, userId);
+    assertParticipant(conversation, userId);
 
-        return conversation;
+    return conversation;
+  }
+
+  public Conversation getConversationReference(Long conversationId, Long userId) {
+    Conversation conversation =
+        conversationRepository
+            .findById(conversationId)
+            .orElseThrow(() -> new NotFoundException("Conversation not found"));
+
+    assertParticipant(conversation, userId);
+
+    return conversation;
+  }
+
+  public User getParticipant(Conversation conversation, Long userId) {
+    if (isSameUser(conversation.getUser1(), userId)) {
+      return conversation.getUser1();
     }
 
-    public Conversation getConversationReference(Long conversationId, Long userId) {
-        Conversation conversation = conversationRepository
-                .findById(conversationId)
-                .orElseThrow(() -> new NotFoundException("Conversation not found"));
-
-        assertParticipant(conversation, userId);
-
-        return conversation;
+    if (isSameUser(conversation.getUser2(), userId)) {
+      return conversation.getUser2();
     }
 
-    public User getParticipant(Conversation conversation, Long userId) {
-        if (isSameUser(conversation.getUser1(), userId)) {
-            return conversation.getUser1();
-        }
+    throw new ForbiddenException("You do not have access to this conversation");
+  }
 
-        if (isSameUser(conversation.getUser2(), userId)) {
-            return conversation.getUser2();
-        }
+  public void assertParticipant(Conversation conversation, Long userId) {
+    getParticipant(conversation, userId);
+  }
 
-        throw new ForbiddenException("You do not have access to this conversation");
+  public User resolveOtherUser(Conversation conversation, Long userId) {
+    if (isSameUser(conversation.getUser1(), userId)) {
+      return conversation.getUser2();
     }
 
-    public void assertParticipant(Conversation conversation, Long userId) {
-        getParticipant(conversation, userId);
+    if (isSameUser(conversation.getUser2(), userId)) {
+      return conversation.getUser1();
     }
 
-    public User resolveOtherUser(Conversation conversation, Long userId) {
-        if (isSameUser(conversation.getUser1(), userId)) {
-            return conversation.getUser2();
-        }
+    throw new ForbiddenException("You do not have access to this conversation");
+  }
 
-        if (isSameUser(conversation.getUser2(), userId)) {
-            return conversation.getUser1();
-        }
-
-        throw new ForbiddenException("You do not have access to this conversation");
-    }
-
-    private boolean isSameUser(User user, Long userId) {
-        return user != null
-                && user.getId() != null
-                && user.getId().equals(userId);
-    }
+  private boolean isSameUser(User user, Long userId) {
+    return user != null && user.getId() != null && user.getId().equals(userId);
+  }
 }

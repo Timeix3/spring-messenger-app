@@ -1,33 +1,34 @@
 package com.timeix3.messenger.repository;
 
 import com.timeix3.messenger.entity.User;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByUsernameIgnoreCase(String username);
+  Optional<User> findByUsernameIgnoreCase(String username);
 
-    boolean existsByUsernameIgnoreCase(String username);
+  boolean existsByUsernameIgnoreCase(String username);
 
-    @Query("""
+  @Query(
+      """
             select u
             from User u
             where lower(u.username) like lower(concat('%', :query, '%'))
                or lower(coalesce(u.displayName, '')) like lower(concat('%', :query, '%'))
             """)
-    Page<User> searchUsers(@Param("query") String query, Pageable pageable);
+  Page<User> searchUsers(@Param("query") String query, Pageable pageable);
 
-    @Query("""
+  @Query(
+      """
         select u
         from User u
         where u.id <> :currentUserId
         order by u.username
         """)
-    Page<User> findAllPublicUsers(@Param("currentUserId") Long currentUserId, Pageable pageable);
+  Page<User> findAllPublicUsers(@Param("currentUserId") Long currentUserId, Pageable pageable);
 }

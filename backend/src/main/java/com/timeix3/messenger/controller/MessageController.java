@@ -16,29 +16,22 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final MessageService messageService;
+  private final MessageService messageService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponse sendMessage(
-            @PathVariable Long conversationId,
-            @Valid @RequestBody SendMessageRequest request
-    ) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        return messageService.sendMessage(conversationId, currentUserId, request);
-    }
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public MessageResponse sendMessage(
+      @PathVariable Long conversationId, @Valid @RequestBody SendMessageRequest request) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    return messageService.sendMessage(conversationId, currentUserId, request);
+  }
 
-    @GetMapping
-    public PageResponse<MessageResponse> getMessages(
-            @PathVariable Long conversationId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size
-    ) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        return messageService.getMessages(
-                conversationId,
-                currentUserId,
-                PageRequest.of(page, size)
-        );
-    }
+  @GetMapping
+  public PageResponse<MessageResponse> getMessages(
+      @PathVariable Long conversationId,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "50") int size) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    return messageService.getMessages(conversationId, currentUserId, PageRequest.of(page, size));
+  }
 }

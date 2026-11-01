@@ -18,27 +18,27 @@ import org.springframework.util.StringUtils;
 @Transactional(readOnly = true)
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+  private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
-    public UserResponse getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return userMapper.toResponse(user);
-    }
+  public UserResponse getUserById(Long userId) {
+    User user =
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+    return userMapper.toResponse(user);
+  }
 
-    public PageResponse<UserResponse> searchUsers(String query, Pageable pageable) {
-        if (!StringUtils.hasText(query)) {
-            return PageResponse.from(Page.empty(pageable));
-        }
-        Page<User> users = userRepository.searchUsers(query.trim(), pageable);
-        Page<UserResponse> mapped = users.map(userMapper::toResponse);
-        return PageResponse.from(mapped);
+  public PageResponse<UserResponse> searchUsers(String query, Pageable pageable) {
+    if (!StringUtils.hasText(query)) {
+      return PageResponse.from(Page.empty(pageable));
     }
+    Page<User> users = userRepository.searchUsers(query.trim(), pageable);
+    Page<UserResponse> mapped = users.map(userMapper::toResponse);
+    return PageResponse.from(mapped);
+  }
 
-    public PageResponse<UserResponse> getDirectoryUsers(Long currentUserId, Pageable pageable) {
-        Page<User> users = userRepository.findAllPublicUsers(currentUserId, pageable);
-        Page<UserResponse> mapped = users.map(userMapper::toResponse);
-        return PageResponse.from(mapped);
-    }
+  public PageResponse<UserResponse> getDirectoryUsers(Long currentUserId, Pageable pageable) {
+    Page<User> users = userRepository.findAllPublicUsers(currentUserId, pageable);
+    Page<UserResponse> mapped = users.map(userMapper::toResponse);
+    return PageResponse.from(mapped);
+  }
 }

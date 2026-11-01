@@ -1,75 +1,38 @@
-# React + TypeScript + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend — одностраничный веб-клиент Spring Messenger. Он предоставляет интерфейс регистрации и входа, каталог пользователей, список диалогов, историю сообщений и индикаторы присутствия. Основная логика приложения находится в `src/App.tsx`, компонентах `src/components/` и пользовательских хуках `src/hooks/`.
 
-Currently, two official plugins are available:
+## Стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 и TypeScript 6.
+- Vite 8 для разработки и production-сборки.
+- Axios для REST API.
+- `@stomp/stompjs` и SockJS для сообщений и присутствия в реальном времени.
+- ESLint; production-статику обслуживает Nginx.
 
-## React Compiler
+## Основные сценарии
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `useAuth` выполняет регистрацию/вход, хранит текущую сессию и обрабатывает выход.
+- `useMessengerData` загружает профиль, каталог/поиск, список диалогов и присутствие; также управляет отметкой прочтения и состоянием списка.
+- `useChatMessages` загружает и постранично подгружает историю, отправляет сообщения и обновляет её.
+- `useChatSocket` подписывается на сообщения диалогов, публикует новые сообщения и поддерживает соединение для статусов присутствия.
+- Компоненты `AuthPage`, `Sidebar` и `ConversationPanel` отвечают за экран входа, навигацию и активную переписку.
 
-## Expanding the ESLint configuration
+Для HTTP-запросов используется API backend, для доставки обновлений без перезагрузки — STOMP поверх SockJS/WebSocket. Полный перечень REST- и STOMP-маршрутов, а также правила авторизации описаны в [документации backend](../backend/README.md#rest-api).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Запуск всего приложения
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Рекомендуемый способ — запустить все сервисы из корня репозитория:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```powershell
+Copy-Item .env.example .env
+# При необходимости измените VITE_API_URL и порты в .env
+docker compose up --build -d
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+Frontend будет доступен на `http://localhost:5173`. Переменная `VITE_API_URL` задаёт базовый URL backend во время сборки frontend-образа (по умолчанию `http://localhost:8080`).
 ```
+
+## CI
+
+GitHub Actions workflow `.github/workflows/ci.yml` выполняет frontend job при `push` и `pull_request`: использует Node.js 24, ставит зависимости через `npm ci`, затем запускает `npm run lint` и `npm run build`.

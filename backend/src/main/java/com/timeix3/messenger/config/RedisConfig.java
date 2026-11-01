@@ -1,8 +1,8 @@
 package com.timeix3.messenger.config;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -11,28 +11,25 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
+  @Bean
+  RedisTemplate<String, String> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, String> template = new RedisTemplate<>();
 
-        template.setConnectionFactory(connectionFactory);
+    template.setConnectionFactory(connectionFactory);
 
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new StringRedisSerializer());
+    template.setKeySerializer(new StringRedisSerializer());
+    template.setValueSerializer(new StringRedisSerializer());
 
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new StringRedisSerializer());
+    template.setHashKeySerializer(new StringRedisSerializer());
+    template.setHashValueSerializer(new StringRedisSerializer());
 
-        template.afterPropertiesSet();
+    template.afterPropertiesSet();
 
-        return template;
-    }
+    return template;
+  }
 
-    @Bean
-    RedisScript<Long> messageRateLimitScript() {
-        return RedisScript.of(
-                new ClassPathResource("scripts/message-rate-limit.lua"),
-                Long.class
-        );
-    }
+  @Bean
+  RedisScript<Long> messageRateLimitScript() {
+    return RedisScript.of(new ClassPathResource("scripts/message-rate-limit.lua"), Long.class);
+  }
 }

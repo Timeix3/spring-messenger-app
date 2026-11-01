@@ -14,24 +14,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserPresenceController {
 
-    private final UserPresenceService userPresenceService;
+  private final UserPresenceService userPresenceService;
 
-    @GetMapping
-    public PageResponse<UserPresenceResponse> getUsersStatuses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size
-    ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("username").ascending()
-        );
+  @GetMapping
+  public PageResponse<UserPresenceResponse> getUsersStatuses(
+      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by("username").ascending());
 
-        return userPresenceService.getUsersPresence(pageable);
-    }
+    return userPresenceService.getUsersPresence(pageable);
+  }
 
-    @GetMapping("/{userId}")
-    public UserPresenceResponse getUserStatus(@PathVariable Long userId) {
-        return userPresenceService.getUserPresence(userId);
-    }
+  @GetMapping("/{userId}")
+  public UserPresenceResponse getUserStatus(@PathVariable Long userId) {
+    return userPresenceService.getUserPresence(userId);
+  }
 }

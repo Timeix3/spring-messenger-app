@@ -18,34 +18,35 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ConversationController {
 
-    private final ConversationService conversationService;
+  private final ConversationService conversationService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ConversationResponse createConversation(@Valid @RequestBody CreateConversationRequest request) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        return conversationService.createConversation(currentUserId, request);
-    }
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public ConversationResponse createConversation(
+      @Valid @RequestBody CreateConversationRequest request) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    return conversationService.createConversation(currentUserId, request);
+  }
 
-    @GetMapping
-    public PageResponse<ConversationListItemResponse> getConversations(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        return conversationService.getCurrentUserConversations(currentUserId, PageRequest.of(page, size));
-    }
+  @GetMapping
+  public PageResponse<ConversationListItemResponse> getConversations(
+      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    return conversationService.getCurrentUserConversations(
+        currentUserId, PageRequest.of(page, size));
+  }
 
-    @GetMapping("/{conversationId}")
-    public ConversationResponse getConversation(@PathVariable Long conversationId) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        return conversationService.getConversation(conversationId, currentUserId);
-    }
+  @GetMapping("/{conversationId}")
+  public ConversationResponse getConversation(@PathVariable Long conversationId) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    return conversationService.getConversation(conversationId, currentUserId);
+  }
 
-    @PostMapping("/{conversationId}/read")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void markRead(@PathVariable Long conversationId, @Valid @RequestBody MarkReadRequest request) {
-        Long currentUserId = SecurityUtils.getCurrentUserId();
-        conversationService.markRead(conversationId, currentUserId, request);
-    }
+  @PostMapping("/{conversationId}/read")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void markRead(
+      @PathVariable Long conversationId, @Valid @RequestBody MarkReadRequest request) {
+    Long currentUserId = SecurityUtils.getCurrentUserId();
+    conversationService.markRead(conversationId, currentUserId, request);
+  }
 }

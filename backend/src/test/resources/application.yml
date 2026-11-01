@@ -1,0 +1,4 @@
+app:
+  jwt:
+    secret-base64: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    access-expiration: 15m
