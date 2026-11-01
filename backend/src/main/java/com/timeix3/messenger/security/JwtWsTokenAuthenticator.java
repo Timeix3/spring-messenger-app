@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class JwtWsTokenAuthenticator {
@@ -26,6 +28,6 @@ public class JwtWsTokenAuthenticator {
         Claims claims = jwtService.parseClaims(token);
         Long userId = Long.valueOf(claims.getSubject());
 
-        return new UsernamePasswordAuthenticationToken(userId, null);
+        return UsernamePasswordAuthenticationToken.authenticated(userId, null, List.of());
     }
 }

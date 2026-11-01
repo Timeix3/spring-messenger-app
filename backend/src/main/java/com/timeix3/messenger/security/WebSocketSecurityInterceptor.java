@@ -14,7 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import java.util.Map;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class WebSocketSecurityInterceptor implements ChannelInterceptor {
     private static final String TOPIC_CONVERSATION_PREFIX = "/topic/conversations/";
     private static final String APP_CONVERSATION_PREFIX = "/app/conversations/";
     private static final String USER_DESTINATION_PREFIX = "/user";
+    private static final String APP_PRESENCE_HEARTBEAT = "/app/presence/heartbeat";
 
     private final JwtWsTokenAuthenticator tokenAuthenticator;
     private final ConversationAccessChecker conversationAccessChecker;
@@ -83,9 +86,10 @@ public class WebSocketSecurityInterceptor implements ChannelInterceptor {
         }
 
         if (user instanceof Long userId) {
-            return new UsernamePasswordAuthenticationToken(
+            return UsernamePasswordAuthenticationToken.authenticated(
                     userId,
-                    null
+                    null,
+                    List.of()
             );
         }
 
@@ -119,7 +123,6 @@ public class WebSocketSecurityInterceptor implements ChannelInterceptor {
             throw new ForbiddenException("Subscription destination is required");
         }
 
-        // /user-направления считаются личными для текущего пользователя.
         if (destination.startsWith(USER_DESTINATION_PREFIX)) {
             return;
         }
@@ -139,6 +142,9 @@ public class WebSocketSecurityInterceptor implements ChannelInterceptor {
         if (!StringUtils.hasText(destination)) {
             throw new ForbiddenException("Send destination is required");
         }
+
+        if (destination.startsWith(APP_PRESENCE_HEARTBEAT))
+            return;
 
         if (destination.startsWith(APP_CONVERSATION_PREFIX)) {
             String path = destination.substring(APP_CONVERSATION_PREFIX.length());

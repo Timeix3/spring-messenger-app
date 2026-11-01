@@ -32,8 +32,8 @@ spring:
 
 app:
   jwt:
-    secret: "X7LlyhADFJv4C+QbeY7EZz7IqnAFnR1l/bAiDzmOpnf0UkNjtdL9XplO8uZPkaLvUhK5LqgY89cNXFNzsv1f5Q=="
-    access-token-expiration: 15m
+    secret-base64: "X7LlyhADFJv4C+QbeY7EZz7IqnAFnR1l/bAiDzmOpnf0UkNjtdL9XplO8uZPkaLvUhK5LqgY89cNXFNzsv1f5Q=="
+    access-expiration: 15m
 
 springdoc:
   api-docs:

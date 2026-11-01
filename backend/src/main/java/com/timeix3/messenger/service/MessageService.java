@@ -26,9 +26,11 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final ConversationAccessChecker accessChecker;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MessageRateLimiter messageRateLimiter;
 
     @Transactional
     public MessageResponse sendMessage(Long conversationId, Long senderId, SendMessageRequest request) {
+        messageRateLimiter.checkAllowed(senderId);
         Conversation conversation = accessChecker.getConversationWithDetails(conversationId, senderId);
         User sender = accessChecker.getParticipant(conversation, senderId);
         Message message = messageMapper.toEntity(request);
