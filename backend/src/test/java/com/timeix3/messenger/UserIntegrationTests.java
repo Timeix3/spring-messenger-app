@@ -165,8 +165,16 @@ class UserIntegrationTests extends IntegrationTestSupport {
         assertEquals(HttpStatus.OK.value(), emptySearch.statusCode());
         assertTrue(objectMapper.readTree(emptySearch.body()).get("content").isEmpty());
 
+        HttpResponse<String> directory = get("/api/users/directory?page=0&size=100", current.accessToken());
+        assertEquals(HttpStatus.OK.value(), directory.statusCode());
+        JsonNode directoryContent = objectMapper.readTree(directory.body()).get("content");
+        assertTrue(directoryContent.size() >= 2);
+        assertTrue(directoryContent.findValuesAsText("id").contains(matching.userId().toString()));
+        assertFalse(directoryContent.findValuesAsText("id").contains(current.userId().toString()));
+
         assertEquals(HttpStatus.UNAUTHORIZED.value(), get("/api/users/me", null).statusCode());
         assertEquals(HttpStatus.UNAUTHORIZED.value(), get("/api/users/search?q=user", null).statusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED.value(), get("/api/users/directory", null).statusCode());
     }
 
     private User createUser(String username, String displayName) {

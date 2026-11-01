@@ -34,4 +34,13 @@ public class UserController {
     ) {
         return userService.searchUsers(query, PageRequest.of(page, size));
     }
+
+    @GetMapping("/directory")
+    public PageResponse<UserResponse> getDirectoryUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size
+    ) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        return userService.getDirectoryUsers(currentUserId, PageRequest.of(page, size));
+    }
 }

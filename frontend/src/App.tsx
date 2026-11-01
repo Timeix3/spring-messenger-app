@@ -1,121 +1,125 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useCallback, useMemo, useState } from 'react'
+import { AuthPage } from './components/AuthPage'
+import { ConversationPanel } from './components/ConversationPanel'
+import { Sidebar, type SidebarTab } from './components/Sidebar'
+import { useAuth } from './hooks/useAuth'
+import { useChatMessages } from './hooks/useChatMessages'
+import { useChatSocket } from './hooks/useChatSocket'
+import { useMessengerData } from './hooks/useMessengerData'
+import { getErrorMessage } from './lib/api'
+import type { User } from './types'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [error, setError] = useState('')
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<SidebarTab>('contacts')
+  const reportError = useCallback((message: string) => setError(message), [])
+
+  const auth = useAuth(reportError)
+  const messenger = useMessengerData(
+    auth.token,
+    selectedUserId,
+    auth.expireSession,
+    auth.setLoading,
+    reportError,
+  )
+  const conversationByUserId = useMemo(
+    () => new Map(messenger.conversations.map((conversation) => [conversation.otherUser.id, conversation])),
+    [messenger.conversations],
+  )
+  const selectedUser = messenger.users.find((user) => user.id === selectedUserId) ?? null
+  const activeConversation = selectedUser ? conversationByUserId.get(selectedUser.id) : undefined
+  const chat = useChatMessages(
+    activeConversation?.id ?? null,
+    messenger.markRead,
+    messenger.handleSentMessage,
+    reportError,
+  )
+  const socketConnected = useChatSocket(
+    auth.token,
+    messenger.conversations,
+    (message) => {
+      messenger.handleIncomingMessage(message)
+      chat.receiveMessage(message)
+    },
+    reportError,
+  )
+
+  async function openUser(user: User) {
+    setError('')
+    setSelectedUserId(user.id)
+    try {
+      await messenger.openConversation(user)
+    } catch (requestError) {
+      setSelectedUserId(null)
+      reportError(getErrorMessage(requestError))
+    }
+  }
+
+  function handleBackToList() {
+    setSelectedUserId(null)
+  }
+
+  async function handleAuthenticate(
+    mode: 'login' | 'register',
+    username: string,
+    password: string,
+    displayName?: string,
+  ) {
+    await auth.authenticate(mode, username, password, displayName)
+  }
+
+  async function handleLogout() {
+    await auth.logout()
+    setSelectedUserId(null)
+  }
+
+  if (!auth.token) return <AuthPage onAuthenticate={handleAuthenticate} />
+
+  if (auth.loading) {
+    return <main className="loading-screen"><div className="loader" />Загружаем мессенджер…</main>
+  }
+
+  if (!messenger.currentUser) {
+    return (
+      <main className="loading-screen">
+        <p className="fatal-error">{error || 'Не удалось загрузить профиль.'}</p>
+        <button className="primary-button" onClick={() => void handleLogout()} type="button">Войти снова</button>
+      </main>
+    )
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <main className={`messenger-shell ${selectedUserId ? 'conversation-open' : 'list-open'}`}>
+      <Sidebar
+        currentUser={messenger.currentUser}
+        users={messenger.users}
+        conversations={messenger.conversations}
+        presence={messenger.presence}
+        selectedUserId={selectedUserId}
+        socketConnected={socketConnected}
+        activeTab={activeTab}
+        onActiveTabChange={setActiveTab}
+        onOpenUser={(user) => void openUser(user)}
+        onLogout={() => void handleLogout()}
+      />
+      <ConversationPanel
+        currentUser={messenger.currentUser}
+        user={selectedUser && activeConversation ? selectedUser : null}
+        presence={selectedUser ? messenger.presence[selectedUser.id] ?? 'OFFLINE' : 'OFFLINE'}
+        messages={chat.messages}
+        loading={chat.loading}
+        loadingOlder={chat.loadingOlder}
+        hasOlderMessages={chat.hasOlderMessages}
+        sending={chat.sending}
+        error={error}
+        onClearError={() => setError('')}
+        onBack={handleBackToList}
+        onLoadOlder={() => void chat.loadOlderMessages()}
+        onSend={chat.sendMessage}
+        onShowContacts={() => setActiveTab('contacts')}
+      />
+    </main>
   )
 }
 
