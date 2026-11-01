@@ -14,7 +14,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/messenger_db
     username: postgres
-    password: postgres
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -28,11 +28,12 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
       timeout: 2000ms
 
 app:
   jwt:
-    secret-base64: "X7LlyhADFJv4C+QbeY7EZz7IqnAFnR1l/bAiDzmOpnf0UkNjtdL9XplO8uZPkaLvUhK5LqgY89cNXFNzsv1f5Q=="
+    secret-base64: ${APP_JWT_SECRET_BASE64}
     access-expiration: 15m
 
 springdoc:

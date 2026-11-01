@@ -35,4 +35,10 @@ public class UserService {
         Page<UserResponse> mapped = users.map(userMapper::toResponse);
         return PageResponse.from(mapped);
     }
+
+    public PageResponse<UserResponse> getDirectoryUsers(Long currentUserId, Pageable pageable) {
+        Page<User> users = userRepository.findAllPublicUsers(currentUserId, pageable);
+        Page<UserResponse> mapped = users.map(userMapper::toResponse);
+        return PageResponse.from(mapped);
+    }
 }
