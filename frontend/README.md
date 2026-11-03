@@ -31,7 +31,6 @@ docker compose up --build -d
 ```
 
 Frontend будет доступен на `http://localhost:5173`. Переменная `VITE_API_URL` задаёт базовый URL backend во время сборки frontend-образа (по умолчанию `http://localhost:8080`).
-```
 
 ## CI
 

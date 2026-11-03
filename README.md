@@ -90,4 +90,4 @@ docker-compose.yml
 ## Документация частей проекта
 
 - [Backend: архитектура, конфигурация, REST API и WebSocket](backend/README.md)
-- [Frontend: структура приложения, API-клиент и локальная разработка](frontend/README.md)
+- [Frontend: структура приложения и API-клиент](frontend/README.md)

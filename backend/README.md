@@ -85,6 +85,12 @@ Compose запускает PostgreSQL и Redis с health check, затем backe
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+Для вызова защищённых методов через Swagger UI сначала выполните регистрацию или вход и
+скопируйте `accessToken` из ответа. Нажмите **Authorize**, вставьте токен без префикса
+`Bearer`, затем подтвердите авторизацию. Swagger автоматически добавит этот префикс к
+запросам. Регистрация и вход доступны без токена; остальные REST-методы по-прежнему
+требуют действующий JWT.
+
 ## WebSocket / STOMP
 
 Точка подключения: `/ws` (обычный WebSocket и SockJS). Токен передаётся как bearer в HTTP handshake или в STOMP `CONNECT` header `Authorization: Bearer <accessToken>`; при подключении через SockJS также поддерживается query-параметр `token`. Для STOMP-клиента используется префикс отправки `/app`, для пользовательских подписок — `/user`.

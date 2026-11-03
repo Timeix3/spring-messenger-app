@@ -142,6 +142,22 @@ class AuthorizationIntegrationTests extends IntegrationTestSupport {
   }
 
   @Test
+  void openApiDocumentsBearerAuthenticationForProtectedEndpoints() throws Exception {
+    HttpResponse<String> response = get("/v3/api-docs", null);
+
+    assertEquals(HttpStatus.OK.value(), response.statusCode());
+
+    var apiDocs = objectMapper.readTree(response.body());
+    var bearerScheme = apiDocs.at("/components/securitySchemes/bearerAuth");
+    assertEquals("http", bearerScheme.get("type").asText());
+    assertEquals("bearer", bearerScheme.get("scheme").asText());
+    assertEquals("JWT", bearerScheme.get("bearerFormat").asText());
+    assertTrue(apiDocs.at("/security/0/bearerAuth").isArray());
+    assertEquals(0, apiDocs.at("/paths/~1api~1auth~1register/post/security").size());
+    assertEquals(0, apiDocs.at("/paths/~1api~1auth~1login/post/security").size());
+  }
+
+  @Test
   void logoutRevokesJwtInRedisAndFilterRejectsIt() throws Exception {
     AuthResponse authResponse = authResponse(register(uniqueUsername(), null));
     Claims claims = jwtService.parseClaims(authResponse.accessToken());

@@ -4,6 +4,7 @@ import com.timeix3.messenger.dto.auth.AuthResponse;
 import com.timeix3.messenger.dto.auth.LoginRequest;
 import com.timeix3.messenger.dto.auth.RegisterRequest;
 import com.timeix3.messenger.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -25,12 +26,14 @@ public class AuthController {
   }
 
   @PostMapping("/register")
+  @SecurityRequirements
   public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
     AuthResponse response = authService.register(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @PostMapping("/login")
+  @SecurityRequirements
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     AuthResponse response = authService.login(request);
     return ResponseEntity.ok(response);
